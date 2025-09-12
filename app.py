@@ -31,9 +31,10 @@ if st.button("Start" or "시험 시작"):
     st.session_state.history = []
     st.session_state.current_index = 0
     st.session_state.show_quiz = True
+    st.session_state.exam_finished = False
 
 # ----------------------
-# 3. 시험 진행 (단어 -> 뜻)
+# 3. 시험 진행 (단어 -> 뜻, form 제거)
 # ----------------------
 if "show_quiz" in st.session_state and st.session_state.show_quiz:
     current_word = st.session_state.quiz_words[st.session_state.current_index]
@@ -41,31 +42,32 @@ if "show_quiz" in st.session_state and st.session_state.show_quiz:
 
     st.subheader(f"문제: {current_word}")
 
-    with st.form(key=f'quiz_form_{st.session_state.current_index}'):
-        answer = st.text_input("이 단어의 뜻은?")
-        submitted = st.form_submit_button("제출")
+    def submit_answer():
+        answer = st.session_state.answer_input.strip()
+        st.session_state.total += 1
 
-        if submitted:
-            st.session_state.total += 1
+        if answer in current_meanings:
+            st.success("정답 ✅")
+            st.session_state.score += 1
+        else:
+            st.error(f"오답 ❌ (정답: {', '.join(current_meanings)})")
 
-            if answer.strip() in current_meanings:
-                st.success("정답 ✅")
-                st.session_state.score += 1
-            else:
-                st.error(f"오답 ❌ (정답: {', '.join(current_meanings)})")
+        st.session_state.history.append({
+            "문제": current_word,
+            "정답": ', '.join(current_meanings),
+            "내 답": answer
+        })
 
-            st.session_state.history.append({
-                "문제": current_word,
-                "정답": ', '.join(current_meanings),
-                "내 답": answer
-            })
+        # 자동 다음 문제
+        st.session_state.current_index += 1
+        if st.session_state.current_index >= len(st.session_state.quiz_words):
+            st.session_state.show_quiz = False
+            st.session_state.exam_finished = True
+            st.success(f"시험 종료! 최종 점수: {st.session_state.score} / {st.session_state.total}")
+        else:
+            st.session_state.answer_input = ""  # 입력 초기화
 
-            # 자동 다음 문제
-            st.session_state.current_index += 1
-            if st.session_state.current_index >= len(st.session_state.quiz_words):
-                st.session_state.show_quiz = False
-                st.session_state.exam_finished = True
-                st.success(f"시험 종료! 최종 점수: {st.session_state.score} / {st.session_state.total}")
+    st.text_input("이 단어의 뜻은?", key="answer_input", on_change=submit_answer)
 
 # ----------------------
 # 4. 시험 종료 후 기록 보기 버튼
