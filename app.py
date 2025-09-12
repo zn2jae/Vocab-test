@@ -64,12 +64,13 @@ if "show_quiz" in st.session_state and st.session_state.show_quiz:
             st.session_state.current_index += 1
             if st.session_state.current_index >= len(st.session_state.quiz_words):
                 st.session_state.show_quiz = False
+                st.session_state.exam_finished = True
                 st.success(f"시험 종료! 최종 점수: {st.session_state.score} / {st.session_state.total}")
 
 # ----------------------
-# 4. 기록 보기
+# 4. 시험 종료 후 기록 보기 버튼
 # ----------------------
-if "history" in st.session_state and st.session_state.history:
-    if st.checkbox("📊 전체 기록 보기"):
+if "exam_finished" in st.session_state and st.session_state.exam_finished:
+    if st.button("📊 전체 기록 보기"):
         df = pd.DataFrame(st.session_state.history)
         st.table(df)
