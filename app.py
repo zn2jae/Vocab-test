@@ -4,7 +4,6 @@ import pandas as pd
 
 # ----------------------
 # 1. 단어 데이터 (예시: 나중에 Day1~Day20 단어 리스트를 넣으면 됨)
-# 예: day_words = {"Day1": {"define": ["정의하다"]}, ...}
 # ----------------------
 day_words = {
     "Day1": {
@@ -41,25 +40,31 @@ if "show_quiz" in st.session_state and st.session_state.show_quiz:
     current_meanings = day_words[selected_day][current_word]
 
     st.subheader(f"문제: {current_word}")
-    answer = st.text_input("이 단어의 뜻은?", key=st.session_state.current_index)
 
-    if answer:
-        st.session_state.total += 1
-        correct_answers = current_meanings
-        if answer.strip() in correct_answers:
-            st.success("정답 ✅")
-            st.session_state.score += 1
-        else:
-            st.error(f"오답 ❌ (정답: {', '.join(correct_answers)})")
-        st.session_state.history.append({"문제": current_word, "정답": ', '.join(correct_answers), "내 답": answer})
+    with st.form(key=f'quiz_form_{st.session_state.current_index}'):
+        answer = st.text_input("이 단어의 뜻은?")
+        submitted = st.form_submit_button("제출")
 
-        # 자동 다음 문제
-        st.session_state.current_index += 1
-        if st.session_state.current_index >= len(st.session_state.quiz_words):
-            st.session_state.show_quiz = False
-            st.success(f"시험 종료! 최종 점수: {st.session_state.score} / {st.session_state.total}")
-        else:
-            st.experimental_rerun()
+        if submitted:
+            st.session_state.total += 1
+
+            if answer.strip() in current_meanings:
+                st.success("정답 ✅")
+                st.session_state.score += 1
+            else:
+                st.error(f"오답 ❌ (정답: {', '.join(current_meanings)})")
+
+            st.session_state.history.append({
+                "문제": current_word,
+                "정답": ', '.join(current_meanings),
+                "내 답": answer
+            })
+
+            # 자동 다음 문제
+            st.session_state.current_index += 1
+            if st.session_state.current_index >= len(st.session_state.quiz_words):
+                st.session_state.show_quiz = False
+                st.success(f"시험 종료! 최종 점수: {st.session_state.score} / {st.session_state.total}")
 
 # ----------------------
 # 4. 기록 보기
