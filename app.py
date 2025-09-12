@@ -30,8 +30,6 @@ if "quiz_word" not in st.session_state:
     st.session_state.score = 0
     st.session_state.total = 0
     st.session_state.history = []  # 기록용
-
-if "show_next" not in st.session_state:
     st.session_state.show_next = False
 
 quiz_word = st.session_state.quiz_word
@@ -48,11 +46,11 @@ elif page == "영단어 → 뜻":
 answer = st.text_input("답 입력")
 
 # ----------------------
-# 5. 정답 확인 및 다음 문제 버튼
+# 5. 정답 확인
 # ----------------------
 if st.button("제출"):
-    st.session_state.show_next = True
     st.session_state.total += 1
+    st.session_state.show_next = True
 
     if page == "뜻 → 영단어":
         correct_answer = quiz_word
@@ -72,14 +70,17 @@ if st.button("제출"):
             st.error(f"오답입니다 ❌ (정답: {', '.join(correct_answers)})")
         st.session_state.history.append({"문제": quiz_word, "정답": ", ".join(correct_answers), "내 답": answer})
 
-# 다음 문제 버튼
-if st.session_state.show_next and st.button("다음 문제 →"):
-    st.session_state.quiz_word = random.choice(words)
-    st.session_state.show_next = False
-    st.experimental_rerun()
+# ----------------------
+# 6. 다음 문제 버튼
+# ----------------------
+if st.session_state.show_next:
+    if st.button("다음 문제 →"):
+        st.session_state.quiz_word = random.choice(words)
+        st.session_state.show_next = False
+        st.experimental_rerun = None  # 제거: rerun 호출 안함
 
 # ----------------------
-# 6. 점수 및 기록
+# 7. 점수 및 기록
 # ----------------------
 st.write(f"점수: {st.session_state.score} / {st.session_state.total}")
 if st.checkbox("📊 전체 기록 보기"):
