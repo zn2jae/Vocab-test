@@ -38,23 +38,24 @@ def load_words(day):
 
 # --- 정답 체크 함수 ---
 def check_answer(word_meaning, user_answer):
-    correct_meanings = []
-    # 뜻을 세미콜론(;)으로 분리하여 여러 뜻풀이 후보를 만듭니다.
-    meaning_candidates = [m.strip() for m in word_meaning.split(';')]
+    # 정답 후보 리스트 생성
+    correct_candidates = []
     
-    # 각 뜻풀이를 다시 쉼표(,)로 분리하여 모든 정답 후보를 만듭니다.
-    for candidate in meaning_candidates:
-        sub_candidates = [s.strip() for s in candidate.split(',')]
-        correct_meanings.extend(sub_candidates)
+    # 세미콜론(;)으로 1차 분리
+    meaning_list = word_meaning.split(';')
+    for item in meaning_list:
+        # 쉼표(,)로 2차 분리
+        sub_items = item.split(',')
+        correct_candidates.extend([s.strip() for s in sub_items if s.strip()])
     
-    # 사용자의 답변을 정규화합니다. (공백 제거)
-    user_answer_normalized = re.sub(r'\s+', '', user_answer.strip())
-
-    for correct in correct_meanings:
-        correct_normalized = re.sub(r'\s+', '', correct.strip())
-        if user_answer_normalized == correct_normalized:
+    # 사용자의 답변과 모든 정답 후보를 정규화하여 비교
+    user_answer_normalized = re.sub(r'[\s\.\;:]', '', user_answer) # 공백, 마침표, 세미콜론, 콜론 제거
+    
+    for candidate in correct_candidates:
+        candidate_normalized = re.sub(r'[\s\.\;:]', '', candidate) # 공백, 마침표, 세미콜론, 콜론 제거
+        if user_answer_normalized == candidate_normalized:
             return True, word_meaning
-    
+            
     return False, word_meaning
 
 # --- 퀴즈 시작 함수 ---
