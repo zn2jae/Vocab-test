@@ -87,9 +87,9 @@ def create_pdf(results_df, day):
     # 한글 폰트 설정
     # Streamlit Cloud에서는 폰트 파일이 필요합니다.
     # 아래 경로는 예시입니다. GitHub에 fonts 폴더를 만들어 폰트를 넣고 경로를 지정해야 합니다.
-    font_path = "fonts/MalgunGothic.ttf"
+    font_path = "fonts/malgun.ttf"
     if not os.path.exists(font_path):
-        st.error("폰트 파일을 찾을 수 없습니다. 'fonts' 폴더에 'MalgunGothic.ttf'를 넣어주세요.")
+        st.error("폰트 파일을 찾을 수 없습니다. 'fonts' 폴더에 'malgun.ttf'를 넣어주세요.")
         return None
     pdf.add_font('malgun', '', font_path, uni=True)
     pdf.set_font('malgun', '', 10)
