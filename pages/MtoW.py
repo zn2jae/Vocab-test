@@ -6,7 +6,7 @@ import re
 
 # --- 페이지 설정 ---
 st.set_page_config(
-    page_title="뜻 맞히기",
+    page_title="MtoW (Meaning to Word)",
     layout="wide"
 )
 
@@ -43,7 +43,7 @@ def start_quiz_mtow():
     if st.session_state.quiz_day:
         df = load_words(st.session_state.quiz_day)
         if df is not None and not df.empty:
-            st.session_state.quiz_data = df.sample(frac=1).reset_index(drop=True) # 무작위로 섞기
+            st.session_state.quiz_data = df.sample(frac=1).reset_index(drop=True)
             st.session_state.total_questions = len(st.session_state.quiz_data)
             st.session_state.quiz_started = True
             st.session_state.score = 0
@@ -105,7 +105,7 @@ else:
                 st.error(f"오답입니다. 정답은: {word}")
             
             st.session_state.current_word_index += 1
-            st.experimental_rerun()
+            st.rerun()
             
     else:
         # --- 퀴즈 종료 ---
@@ -120,4 +120,4 @@ else:
             st.session_state.quiz_started = False
             st.session_state.quiz_data = None
             st.session_state.results = []
-            st.experimental_rerun()
+            st.rerun()
