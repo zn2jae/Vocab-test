@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import random
 import os
+import re
 
 # --- 페이지 설정 ---
 st.set_page_config(
-    page_title="단어 맞히기",
+    page_title="WtoM (Word to Meaning)",
     layout="wide"
 )
 
@@ -37,35 +38,31 @@ def load_words(day):
 
 # --- 정답 체크 함수 ---
 def check_answer(word_meaning, user_answer):
-    # 뜻을 세미콜론(;)으로 분리하고, 각 뜻을 다시 쉼표(,)로 분리하여 모든 정답 후보를 만듭니다.
     correct_meanings = []
-    meaning_parts = word_meaning.split(';')
-    for part in meaning_parts:
-        # 괄호와 품사 정보 제거 (예: v., n., a. 등)
-        cleaned_part = re.sub(r'\(.*\)', '', part).strip()
-        cleaned_part = re.sub(r'[vna]\.', '', cleaned_part).strip()
-        cleaned_part = re.sub(r'\[.*\]', '', cleaned_part).strip()
-        
-        # 쉼표(,)도 정답 후보로 분리합니다.
-        sub_parts = cleaned_part.split(',')
-        correct_meanings.extend([sp.strip() for sp in sub_parts if sp.strip()])
-
-    # 사용자의 답변도 정규화합니다.
+    # 뜻을 세미콜론(;)으로 분리하여 여러 뜻풀이 후보를 만듭니다.
+    meaning_candidates = [m.strip() for m in word_meaning.split(';')]
+    
+    # 각 뜻풀이를 다시 쉼표(,)로 분리하여 모든 정답 후보를 만듭니다.
+    for candidate in meaning_candidates:
+        sub_candidates = [s.strip() for s in candidate.split(',')]
+        correct_meanings.extend(sub_candidates)
+    
+    # 사용자의 답변을 정규화합니다. (공백 제거)
     user_answer_normalized = re.sub(r'\s+', '', user_answer.strip())
 
     for correct in correct_meanings:
         correct_normalized = re.sub(r'\s+', '', correct.strip())
         if user_answer_normalized == correct_normalized:
-            return True, correct # 정답 후보와 일치하면 True 반환
+            return True, word_meaning
     
-    return False, word_meaning # 일치하는 것이 없으면 False 반환
+    return False, word_meaning
 
 # --- 퀴즈 시작 함수 ---
 def start_quiz():
     if st.session_state.quiz_day:
         df = load_words(st.session_state.quiz_day)
         if df is not None and not df.empty:
-            st.session_state.quiz_data = df.sample(frac=1).reset_index(drop=True) # 무작위로 섞기
+            st.session_state.quiz_data = df.sample(frac=1).reset_index(drop=True)
             st.session_state.total_questions = len(st.session_state.quiz_data)
             st.session_state.quiz_started = True
             st.session_state.score = 0
@@ -84,7 +81,6 @@ if not st.session_state.quiz_started:
     day_options = [f'Day{i}' for i in range(1, 45)]
     selected_day_str = st.selectbox("Day를 선택하세요", options=day_options, index=None)
     
-    # 선택된 Day 값을 세션 상태에 저장
     if selected_day_str:
         st.session_state.quiz_day = int(selected_day_str.replace('Day', ''))
 
@@ -118,7 +114,7 @@ else:
                 st.error(f"오답입니다. 정답은: {correct_meaning}")
             
             st.session_state.current_word_index += 1
-            st.experimental_rerun()
+            st.rerun()
             
     else:
         # --- 퀴즈 종료 ---
@@ -133,4 +129,4 @@ else:
             st.session_state.quiz_started = False
             st.session_state.quiz_data = None
             st.session_state.results = []
-            st.experimental_rerun()
+            st.rerun()
