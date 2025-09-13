@@ -110,7 +110,7 @@ def start_quiz():
             st.warning("선택한 Day에 단어가 없습니다. 다른 Day를 선택해주세요.")
 
 # --- 메인 페이지 UI ---
-st.title("WtoM (Word to Meaning) - 단어 시험")
+st.title("WtoM (Word to Meaning)")
 
 if not st.session_state.quiz_started:
     st.info("단어 시험을 시작하려면 아래에서 Day를 선택해주세요.")
