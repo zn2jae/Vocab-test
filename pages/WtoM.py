@@ -73,9 +73,9 @@ def create_pdf(results_df, day):
             self.cell(0, 10, f'Page {self.page_no()}/{{nb}}', 0, 0, 'C')
 
     pdf = PDF()
-    font_path = "fonts/MalgunGothic.ttf"
+    font_path = "fonts/malgun.ttf"
     if not os.path.exists(font_path):
-        st.error("폰트 파일을 찾을 수 없습니다. 'fonts' 폴더에 'MalgunGothic.ttf'를 넣어주세요.")
+        st.error("폰트 파일을 찾을 수 없습니다. 'fonts' 폴더에 'malgun.ttf'를 넣어주세요.")
         return None
     
     pdf.add_font('malgun', '', font_path, uni=True)
