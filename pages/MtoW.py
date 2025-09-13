@@ -85,7 +85,7 @@ else:
         
         with st.form(key=f'quiz_form_mtow_{st.session_state.current_word_index_mtow}'):
             user_answer = st.text_input("단어를 입력하세요:", key=f'user_answer_form_mtow_{st.session_state.current_word_index_mtow}')
-            submit_button = st.form_submit_button("정답 확인", use_container_width=True)
+            submit_button = st.form_submit_button("제출", use_container_width=True)
 
             if submit_button:
                 is_correct = (user_answer.strip().lower() == word.strip().lower())
@@ -106,9 +106,7 @@ else:
                 st.rerun()
             
     else:
-        st.header("단어 시험 결과")
-        st.markdown("---")
-        st.subheader(f"총 {st.session_state.total_questions_mtow}문제 중 {st.session_state.score_mtow}개를 맞혔습니다!")
+        st.header("고생하셨습니다")
         
         results_df = pd.DataFrame(st.session_state.results_mtow)
         st.table(results_df)
