@@ -30,8 +30,12 @@ if 'quiz_day' not in st.session_state:
 def load_words(day):
     file_path = os.path.join("data", f"Day{day}.csv")
     if os.path.exists(file_path):
-        df = pd.read_csv(file_path, encoding='utf-8')
-        return df
+        try:
+            df = pd.read_csv(file_path, encoding='utf-8')
+            return df
+        except pd.errors.ParserError:
+            st.error(f"'{file_path}' 파일의 형식에 오류가 있습니다. CSV 파일을 쌍따옴표로 올바르게 묶었는지 확인해주세요.")
+            return None
     else:
         st.error(f"'{file_path}' 파일을 찾을 수 없습니다. 파일 경로를 확인해주세요.")
         return None
@@ -48,11 +52,12 @@ def check_answer(word_meaning, user_answer):
         sub_items = item.split(',')
         correct_candidates.extend([s.strip() for s in sub_items if s.strip()])
     
-    # 사용자의 답변과 모든 정답 후보를 정규화하여 비교
-    user_answer_normalized = re.sub(r'[\s\.\;:]', '', user_answer) # 공백, 마침표, 세미콜론, 콜론 제거
+    # 사용자의 답변을 정규화합니다. (모든 공백과 특수문자 제거)
+    user_answer_normalized = re.sub(r'[\s\.\;:\'"]', '', user_answer).lower()
     
     for candidate in correct_candidates:
-        candidate_normalized = re.sub(r'[\s\.\;:]', '', candidate) # 공백, 마침표, 세미콜론, 콜론 제거
+        # 정답 후보도 정규화합니다.
+        candidate_normalized = re.sub(r'[\s\.\;:\'"]', '', candidate).lower()
         if user_answer_normalized == candidate_normalized:
             return True, word_meaning
             
