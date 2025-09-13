@@ -135,7 +135,7 @@ else:
         
         with st.form(key=f'quiz_form_{st.session_state.current_word_index}'):
             user_answer = st.text_input("뜻을 입력하세요:", key=f'user_answer_form_{st.session_state.current_word_index}')
-            submit_button = st.form_submit_button("정답 확인", use_container_width=True)
+            submit_button = st.form_submit_button("제출", use_container_width=True)
             
             if submit_button:
                 is_correct, correct_meaning = check_answer(meaning, user_answer)
