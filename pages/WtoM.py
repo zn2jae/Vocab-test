@@ -109,29 +109,6 @@ def start_quiz():
         else:
             st.warning("선택한 Day에 단어가 없습니다. 다른 Day를 선택해주세요.")
 
-# --- 정답 처리 함수 ---
-def handle_submit(user_answer):
-    current_data = st.session_state.quiz_data.iloc[st.session_state.current_word_index]
-    word = current_data['word']
-    meaning = current_data['meaning']
-    
-    is_correct, correct_meaning = check_answer(meaning, user_answer)
-    st.session_state.results.append({
-        '단어': word,
-        '정답': correct_meaning,
-        '내 답변': user_answer,
-        '결과': '✅ 정답' if is_correct else '❌ 오답'
-    })
-    
-    if is_correct:
-        st.success("정답입니다!")
-        st.session_state.score += 1
-    else:
-        st.error(f"오답입니다. 정답은: {correct_meaning}")
-    
-    st.session_state.current_word_index += 1
-    st.rerun()
-
 # --- 메인 페이지 UI ---
 st.title("WtoM (Word to Meaning) - 단어 시험")
 
@@ -156,8 +133,26 @@ else:
         st.markdown("---")
         st.markdown(f"### **단어:** `{word}`")
         
-        user_answer = st.text_input("뜻을 입력하세요:", key=f"word_input_{st.session_state.current_word_index}", on_change=lambda: handle_submit(st.session_state[f"word_input_{st.session_state.current_word_index}"]))
-        st.button("정답 확인", on_click=lambda: handle_submit(user_answer), use_container_width=True)
+        with st.form(key=f'quiz_form_{st.session_state.current_word_index}'):
+            user_answer = st.text_input("뜻을 입력하세요:", key=f'user_answer_form_{st.session_state.current_word_index}')
+            submit_button = st.form_submit_button("정답 확인", use_container_width=True)
+            
+            if submit_button:
+                is_correct, correct_meaning = check_answer(meaning, user_answer)
+                st.session_state.results.append({
+                    '단어': word,
+                    '정답': correct_meaning,
+                    '내 답변': user_answer,
+                    '결과': '✅ 정답' if is_correct else '❌ 오답'
+                })
+                if is_correct:
+                    st.success("정답입니다!")
+                    st.session_state.score += 1
+                else:
+                    st.error(f"오답입니다. 정답은: {correct_meaning}")
+                
+                st.session_state.current_word_index += 1
+                st.rerun()
 
     else:
         st.header("단어 시험 결과")
