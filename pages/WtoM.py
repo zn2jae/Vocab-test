@@ -175,9 +175,7 @@ else:
 
     else:
         # --- 퀴즈 종료 ---
-        st.header("단어 시험 결과")
-        st.markdown("---")
-        st.subheader(f"총 {st.session_state.total_questions}문제 중 {st.session_state.score}개를 맞혔습니다!")
+        st.header("고생하셨습니다")
         
         results_df = pd.DataFrame(st.session_state.results)
         
